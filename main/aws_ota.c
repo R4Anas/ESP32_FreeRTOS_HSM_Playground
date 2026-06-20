@@ -10,6 +10,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+extern const uint8_t root_ca_pem_start[] asm("_binary_root_ca_pem_start");
+
 static const char *TAG = "AWS_OTA";
 
 // Buffer for version.json
@@ -56,11 +58,9 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
 static bool is_new_firmware_available(char *firmware_url, size_t url_size)
 {
     esp_http_client_config_t config = {
-
-        //.url = OTA_LOCAL_VERSION_URL //for local
-        .url = OTA_S3_VERSION_URL, // Replace with local if testing
+        .url = OTA_S3_VERSION_URL,
         .event_handler = http_event_handler,
-        .cert_pem = NULL,
+        .cert_pem = (const char *)root_ca_pem_start,
     };
 
     esp_http_client_handle_t client = esp_http_client_init(&config);
@@ -120,7 +120,7 @@ esp_err_t aws_ota_check_for_updates(void)
 
     esp_http_client_config_t http_config = {
         .url = firmware_url,
-        .cert_pem = NULL,
+        .cert_pem = (const char *)root_ca_pem_start,
     };
 
     esp_https_ota_config_t ota_config = {
