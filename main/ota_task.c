@@ -10,6 +10,7 @@
 #include "esp_wifi.h"
 #include "esp_system.h"
 #include "esp_http_client.h"
+#include "aws_ota.h"
 
 static const char *TAG = "OTA";
 
@@ -33,16 +34,9 @@ static void ota_task(void *arg)
             ESP_LOGI(TAG, "WiFi ready, checking OTA version...");
 
             // Use local version file for simulation
-            const char *ota_url = OTA_LOCAL_FIRMWARE_FILE; // your URL
+            
 
-            esp_http_client_config_t http_config = {
-                .url = ota_url,
-                .cert_pem = NULL};
-
-            esp_https_ota_config_t ota_config = {
-                .http_config = &http_config};
-
-            esp_err_t ret = esp_https_ota(&ota_config);
+            esp_err_t ret = aws_ota_check_for_updates();
             if (ret == ESP_OK)
             {
                 ESP_LOGI(TAG, "OTA successful, restarting...");

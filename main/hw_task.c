@@ -6,7 +6,6 @@
 #include "driver/adc.h"
 #include "hw_task.h"
 #include "comm_task.h"
-#include "ota_task.h"
 
 #define LED_PIN GPIO_NUM_2
 #define BUTTON_PIN GPIO_NUM_0
@@ -57,7 +56,5 @@ void hw_task_init(void)
     // Create task
     xTaskCreate(hw_task, "HW_TASK", 4096, NULL, 5, NULL);
 
-    // Make these handles accessible to other tasks
     comm_task_set_queue(adc_queue);
-    ota_task_set_button_sem(button_sem);
 }
